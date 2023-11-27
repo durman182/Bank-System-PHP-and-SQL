@@ -63,7 +63,8 @@ if ($token && validateToken($token)){
 			if($accounts == "")
 			{
 				
-				$table_name = "c_" . $id . "_" . $username . "_account";
+				$_rand = Rand(1000,9999);
+				$table_name = "c_" . $id . "_" . $_rand . "_" . $username . "_account";
 				
 				$sql_3 = "CREATE TABLE " . $table_name . " (
 				id INT(250) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
