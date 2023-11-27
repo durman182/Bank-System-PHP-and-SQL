@@ -11,9 +11,9 @@ function validateToken($token)
     // For demonstration, we're accepting any non-empty token as valid
     return !empty($token);
 }
-$token = "35a450e2c1b8526c43a652516766c7b9f2c95308a7de850d0f";
+
 // Check if a valid token is provided
-if (($token && validateToken($token)) || true) {
+if ($token && validateToken($token)){
 	
 	$servername = "localhost";
 	$username = "root";
@@ -40,6 +40,8 @@ if (($token && validateToken($token)) || true) {
 			$_expire = $row_2["expire"];
 		}
 		
+		$accounts = "";
+		
 		$sql_1 = "SELECT * FROM customers WHERE id = '$_id'";
 		$result_1 = $conn->query($sql_1);
 		if ($result_1->num_rows > 0) {	
@@ -51,9 +53,42 @@ if (($token && validateToken($token)) || true) {
 				$password = $row_1["password"];
 				$email = $row_1["email"];
 				$genre = $row_1["genre"];
-				$balance = $row_1["balance"];
+				$accounts = $row_1["accounts"];
 				$last_login = $row_1["last_login"];
 				$date_registration = $row_1["date_registration"];
+			}
+			
+			
+			
+			if($accounts == "")
+			{
+				
+				$table_name = "c_" . $id . "_" . $username . "_account";
+				
+				$sql_3 = "CREATE TABLE " . $table_name . " (
+				id INT(250) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+				user_id_code VARCHAR(250) NOT NULL,
+				accounts VARCHAR(100) NOT NULL,
+				other VARCHAR(250) NOT NULL,
+				last_time VARCHAR(100) NOT NULL,
+				last_time_text VARCHAR(100) NOT NULL
+				)";
+				
+				if ($conn->query($sql_3) === TRUE) {
+				  $_state = "success"; //"New record created successfully";
+				} else {
+				  $_state = "Error: " . $sql_3 . "<br>" . $conn->error;
+				}
+				
+				$sql_s = "UPDATE customers SET accounts = '$table_name' WHERE id = '$id'";          /* update time in user_logged*/
+				if ($conn->query($sql_s) === TRUE) 
+				{
+					echo "Record updated successfully";
+					$_state = "success";
+				} else {
+					echo "Error updating record: " . $conn->error;
+					$_state = "error";
+				}
 			}
 			
 			// Respond with the token
@@ -65,7 +100,7 @@ if (($token && validateToken($token)) || true) {
 				'password' => $password,
 				'email' => $email,
 				'genre' => $genre,
-				'balance' => $balance,
+				'accounts' => $accounts,
 				'last_login' => $last_login,
 				'date_registration' => $date_registration,
 				'token' => $_token 
