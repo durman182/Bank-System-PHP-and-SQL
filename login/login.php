@@ -64,8 +64,6 @@ if (!empty($request->username) && !empty($request->password)) {
 					$_state = "error insert data";
 				}
 			}
-			// Generate a secure token (you might want to use a library for this)
-			
 			// Respond with the token
 			$response = array('status' => $_state, 'token' => $token);
 		} else {
